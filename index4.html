@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=, initial-scale=1.0">
+    <title>Contact Form</title>
+    <link rel="stylesheet" href="style4.css">
+</head>
+
+<body>
+    <div class="container">
+        <h2>Contact Us</h2>
+        <form id="contactForm" novalidate>
+            <div>
+                <label for="name">Name<span aria-hidden="true">*</span></label>
+                <input type="text" id="name" name="user_name" required autocomplete="name" aria-required="true" />
+                <div class="error" id="nameError"></div>
+            </div>
+            <div>
+            
+                <label for="email">Email<span aria-hidden="true">*</span></label>
+                <input type="email" id="email" name="user_email" required autocomplete="email" aria-required="true" />
+                <div class="error" id="emailError"></div>
+            </div>
+            <div>
+                <label for="message">Message<span aria-hidden="true">*</span></label>
+                <textarea id="message" name="message" rows="5" required aria-required="true"></textarea>
+                <div class="error" id="messageError"></div>
+            </div>
+            <input type="submit" value="Send Message" />
+        </form>
+        <div class="message" id="formMessage" role="alert" aria-live="polite"></div>
+    </div>
+
+    <script>
+        // Initialize EmailJS with your user ID (replace 'YOUR_USER_ID' with your actual user ID)
+        (function () {
+            emailjs.init('YOUR_USER_ID');
+        })();
+
+        const form = document.getElementById('contactForm');
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const messageInput = document.getElementById('message');
+        const nameError = document.getElementById('nameError');
+        const emailError = document.getElementById('emailError');
+        const messageError = document.getElementById('messageError');
+        const formMessage = document.getElementById('formMessage');
+
+        function validateEmail(email) {
+            // Simple email validation regex
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        function clearErrors() {
+            nameError.textContent = '';
+            emailError.textContent = '';
+            messageError.textContent = '';
+            formMessage.textContent = '';
+            formMessage.className = 'message';
+        }
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            clearErrors();
+
+            let valid = true;
+
+            if (nameInput.value.trim() === '') {
+                nameError.textContent = 'Please enter your name.';
+                valid = false;
+            }
+
+            if (emailInput.value.trim() === '') {
+                emailError.textContent = 'Please enter your email.';
+                valid = false;
+            } else if (!validateEmail(emailInput.value.trim())) {
+                emailError.textContent = 'Please enter a valid email address.';
+                valid = false;
+            }
+
+            if (messageInput.value.trim() === '') {
+                messageError.textContent = 'Please enter your message.';
+                valid = false;
+            }
+
+            if (!valid) {
+                return;
+            }
+
+            // Send email using EmailJS
+            // Replace 'YOUR_SERVICE_ID' and 'YOUR_TEMPLATE_ID' with your actual EmailJS service and template IDs
+            const serviceID = 'YOUR_SERVICE_ID';
+            const templateID = 'YOUR_TEMPLATE_ID';
+
+            formMessage.textContent = 'Sending...';
+            formMessage.className = 'message';
+
+            emailjs.send(serviceID, templateID, {
+                user_name: nameInput.value.trim(),
+                user_email: emailInput.value.trim(),
+                message: messageInput.value.trim()
+            })
+                .then(() => {
+                    formMessage.textContent = 'Message sent successfully! Thank you.';
+                    formMessage.className = 'message success';
+                    form.reset();
+                }, (error) => {
+                    formMessage.textContent = 'An error occurred. Please try again later.';
+                    formMessage.className = 'message error';
+                    console.error('EmailJS error:', error);
+                });
+        });
+    </script>
+</body>
+
+</html>
+
+
